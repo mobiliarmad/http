@@ -31,11 +31,12 @@ fileprivate enum ResponseType: String {
 ///     - data: The JSON Data to parse
 /// - Returns: The parsed value or an error
 func tryParseJson(_ data: Data) -> Any {
-  do {
-    return try JSONSerialization.jsonObject(with: data, options: .mutableContainers)
-  } catch {
-    return error.localizedDescription
-  }
+    let str = String(data: data, encoding: .utf8)
+    do {
+        return try JSONSerialization.jsonObject(with: data, options: .mutableContainers)
+    } catch {
+        return str
+    }
 }
 
 class UploadOperation : Operation {
