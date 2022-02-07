@@ -63,8 +63,17 @@ import Foundation
         guard let _ = call.getString("filePath") else { return call.reject("Must provide a file path to download the file to") }
         guard let _ = URL(string: u) else { return call.reject("Invalid URL") }
 
+        let progressEmitter: HttpRequestHandler.ProgressEmitter = {bytes, contentLength in
+            self.notifyListeners("progress", data: [
+                "type": "DOWNLOAD",
+                "url": u,
+                "bytes": bytes,
+                "contentLength": contentLength
+            ])
+        }
+
         do {
-            try HttpRequestHandler.download(call)
+            try HttpRequestHandler.download(call, updateProgress: progressEmitter)
         } catch let e {
             call.reject(e.localizedDescription)
         }
@@ -93,6 +102,18 @@ import Foundation
         if url != nil {
             cookieManager!.setCookie(url!, key, cookieManager!.encode(value))
             call.resolve()
+        }
+    }
+    
+    @objc func getCookiesMap(_ call: CAPPluginCall) {
+        let url = getServerUrl(call)
+        if url != nil {
+            let cookies = cookieManager!.getCookies(url!)
+            var cookiesMap: [String: String] = [:]
+            for cookie in cookies {
+                cookiesMap[cookie.name] = cookie.value
+            }
+            call.resolve(cookiesMap)
         }
     }
 
@@ -145,9 +166,13 @@ import Foundation
     @objc func clearCookies(_ call: CAPPluginCall) {
         let url = getServerUrl(call)
         if url != nil {
-            let jar = HTTPCookieStorage.shared
-            jar.cookies(for: url!)?.forEach({ (cookie) in jar.deleteCookie(cookie) })
+            cookieManager!.clearCookies(url!)
             call.resolve()
         }
+    }
+    
+    @objc func clearAllCookies(_ call: CAPPluginCall) {
+        cookieManager!.clearAllCookies()
+        call.resolve()
     }
 }
