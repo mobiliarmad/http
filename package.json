@@ -1,6 +1,6 @@
 {
   "name": "@capacitor-mobi/http",
-  "version": "1.2.1",
+  "version": "2.0.1",
   "description": "A native HTTP plugin for CORS-free requests and file transfers",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@ionic/prettier-config": "^1.0.1",
+    "all-contributors-cli": "^6.20.0",
     "husky": "^6.0.0",
     "prettier": "^2.3.0",
     "prettier-plugin-java": "^1.1.1",
@@ -62,9 +63,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/capacitor-mobi/http"
+    "url": "https://github.com/capacitor-community/http"
   },
   "bugs": {
-    "url": "https://github.com/capacitor-mobi/http/issues"
+    "url": "https://github.com/capacitor-community/http/issues"
   }
 }

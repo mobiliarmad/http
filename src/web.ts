@@ -12,6 +12,7 @@ import type {
   HttpSetCookieOptions,
   HttpMultiCookiesOptions,
   HttpSingleCookieOptions,
+  ProgressStatus,
 } from './definitions';
 import { WebPlugin } from '@capacitor/core';
 import * as Cookie from './cookie';
@@ -67,7 +68,10 @@ export class HttpWeb extends WebPlugin implements HttpPlugin {
   /**
    * Gets all HttpCookies as a Map
    */
-  public getCookiesMap = async (): Promise<HttpCookieMap> => {
+  public getCookiesMap = async (
+    // @ts-ignore
+    options: HttpMultiCookiesOptions,
+  ): Promise<HttpCookieMap> => {
     const cookies = Cookie.getCookies();
     const output: HttpCookieMap = {};
 
@@ -127,6 +131,11 @@ export class HttpWeb extends WebPlugin implements HttpPlugin {
   ): Promise<void> => Cookie.clearCookies();
 
   /**
+   * Clears out cookies by setting them to expire immediately
+   */
+  public clearAllCookies = async (): Promise<void> => Cookie.clearCookies();
+
+  /**
    * Uploads a file through a POST request
    * @param options TODO
    */
@@ -156,7 +165,52 @@ export class HttpWeb extends WebPlugin implements HttpPlugin {
       options.webFetchExtra,
     );
     const response = await fetch(options.url, requestInit);
-    const blob = await response.blob();
+    let blob: Blob;
+
+    if (!options?.progress) blob = await response.blob();
+    else if (!response?.body) blob = new Blob();
+    else {
+      const reader = response.body.getReader();
+
+      let bytes: number = 0;
+      let chunks: Array<Uint8Array | undefined> = [];
+
+      const contentType: string | null = response.headers.get('content-type');
+      const contentLength: number = parseInt(
+        response.headers.get('content-length') || '0',
+        10,
+      );
+
+      while (true) {
+        const { done, value } = await reader.read();
+
+        if (done) break;
+
+        chunks.push(value);
+        bytes += value?.length || 0;
+
+        const status: ProgressStatus = {
+          type: 'DOWNLOAD',
+          url: options.url,
+          bytes,
+          contentLength,
+        };
+
+        this.notifyListeners('progress', status);
+      }
+
+      let allChunks = new Uint8Array(bytes);
+      let position: number = 0;
+      for (const chunk of chunks) {
+        if (typeof chunk === 'undefined') continue;
+
+        allChunks.set(chunk, position);
+        position += chunk.length;
+      }
+
+      blob = new Blob([allChunks.buffer], { type: contentType || undefined });
+    }
+
     return {
       blob,
     };
