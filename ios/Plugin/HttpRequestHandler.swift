@@ -285,7 +285,7 @@ class HttpRequestHandler {
             if httpResponse != nil {
                 if(httpResponse!.statusCode >= 400){
                     CAPLog.print("Error on download file", String(describing: downloadLocation), String(describing: response), String(describing: error))
-                    call.resolve(["status": httpResponse!.statusCode, "path": ""])
+                    call.resolve(["status": httpResponse?.statusCode, "path": ""])
                     return
                 }
             }
