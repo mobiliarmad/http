@@ -250,7 +250,7 @@ class HttpRequestHandler {
         task.resume()
     }
 
-     public static func download(_ call: CAPPluginCall, updateProgress: @escaping ProgressEmitter) throws {
+    public static func download(_ call: CAPPluginCall, updateProgress: @escaping ProgressEmitter) throws {
         let method = call.getString("method") ?? "GET"
         let fileDirectory = call.getString("fileDirectory") ?? "DOCUMENTS"
         let headers = (call.getObject("headers") ?? [:]) as! [String: String]
