@@ -171,6 +171,7 @@ export interface HttpGetCookiesResult {
 export interface HttpDownloadFileResult {
   path?: string;
   blob?: Blob;
+  status?: number;
 }
 
 export interface HttpUploadFileResult extends HttpResponse {}

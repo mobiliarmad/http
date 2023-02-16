@@ -281,6 +281,14 @@ class HttpRequestHandler {
                 call.reject("Error", "DOWNLOAD", error, [:])
                 return
             }
+            let httpResponse = response as? HTTPURLResponse
+            if httpResponse != nil {
+                if(httpResponse!.statusCode >= 400){
+                    CAPLog.print("Error on download file", String(describing: downloadLocation), String(describing: response), String(describing: error))
+                    call.resolve(["status": httpResponse!.statusCode, "path": ""])
+                    return
+                }
+            }
 
             guard let location = downloadLocation else {
                 call.reject("Unable to get file after downloading")
@@ -300,7 +308,7 @@ class HttpRequestHandler {
                 try FilesystemUtils.createDirectoryForFile(dest, true)
 
                 try fileManager.moveItem(at: location, to: dest)
-                call.resolve(["path": dest.absoluteString])
+                call.resolve(["status": httpResponse?.statusCode, "path": dest.absoluteString])
             } catch let e {
                 call.reject("Unable to download file", "DOWNLOAD", e)
                 return
