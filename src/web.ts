@@ -212,6 +212,7 @@ export class HttpWeb extends WebPlugin implements HttpPlugin {
     }
 
     return {
+      status: response.status,
       blob,
     };
   };
