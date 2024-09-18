@@ -1,24 +1,23 @@
-import type {
-  HttpPlugin,
-  HttpOptions,
-  HttpResponse,
-  HttpDownloadFileOptions,
-  HttpDownloadFileResult,
-  HttpUploadFileOptions,
-  HttpUploadFileResult,
-  HttpCookie,
-  HttpCookieMap,
-  HttpGetCookiesResult,
-  HttpSetCookieOptions,
-  HttpMultiCookiesOptions,
-  HttpSingleCookieOptions,
-  ProgressStatus,
-} from './definitions';
 import { WebPlugin } from '@capacitor/core';
 import * as Cookie from './cookie';
+import type {
+  HttpCookie,
+  HttpCookieMap,
+  HttpDownloadFileOptions,
+  HttpDownloadFileResult,
+  HttpGetCookiesResult,
+  HttpMultiCookiesOptions,
+  HttpOptions,
+  HttpResponse,
+  HttpSetCookieOptions,
+  HttpSingleCookieOptions,
+  HttpUploadFileOptions,
+  HttpUploadFileResult,
+  ProgressStatus,
+} from './definitions';
 import * as Request from './request';
 
-export class HttpWeb extends WebPlugin implements HttpPlugin {
+export class HttpWeb extends WebPlugin {
   constructor() {
     super();
   }
